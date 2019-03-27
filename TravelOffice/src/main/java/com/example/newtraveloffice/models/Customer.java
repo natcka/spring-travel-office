@@ -1,10 +1,16 @@
 package com.example.newtraveloffice.models;
 
+import org.springframework.lang.Nullable;
+
 public class Customer {
 
     private String name;
     private String surname;
+
+    @Nullable
     private Address address;
+
+    @Nullable
     private Trip trip;
 
     public Customer() {

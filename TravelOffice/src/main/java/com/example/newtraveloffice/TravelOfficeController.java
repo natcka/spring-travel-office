@@ -41,7 +41,7 @@ public class TravelOfficeController {
 //    @Autowired
 //    private UserService userService;
 
-    @PostMapping("/customer/add")
+    @PostMapping(value = "/customer/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity addCustomer(@Valid @RequestBody Customer customer) {
         ResponseEntity result = null;
         Customer addedCustomer = travelOfficeService.addCustomer(customer);
