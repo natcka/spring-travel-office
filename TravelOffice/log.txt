@@ -1,0 +1,6 @@
+mar 27, 2019 11:47:06 AM com.example.newtraveloffice.NewTravelOfficeApplication main
+INFO: Running application [tu_user_login]
+mar 27, 2019 11:47:10 AM com.example.newtraveloffice.MainHandler addCustomer
+INFO: adding new customer [tu_nazwa_usera]
+mar 27, 2019 11:47:24 AM com.example.newtraveloffice.MainHandler showCustomers
+INFO: showing all customers [tu_nazwa_usera]
