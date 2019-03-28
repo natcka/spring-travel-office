@@ -41,8 +41,13 @@ public class TravelOfficeService {
         return travelOffice.findTripByDestination(destination);
     }
 
-    public void removeTrip(String key) throws NoSuchTripException {
-        travelOffice.removeTrip(key);
+    public Trip addTrip(Trip trip) {
+        return travelOffice.addTrip(trip.getDestination(), trip);
+    }
+
+
+    public boolean removeTrip(String key) throws NoSuchTripException {
+        return travelOffice.removeTrip(key);
     }
 
     public void getAllTrips() {

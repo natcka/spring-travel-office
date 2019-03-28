@@ -6,8 +6,6 @@ public class Customer {
 
     private String name;
     private String surname;
-
-    @Nullable
     private Address address;
 
     @Nullable

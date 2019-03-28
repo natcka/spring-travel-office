@@ -43,8 +43,9 @@ public class TravelOffice {
         this.mapOfTrips = mapOfTrips;
     }
 
-    public void addTrip(String key, Trip newTrip) {
+    public Trip addTrip(String key, Trip newTrip) {
         mapOfTrips.put(key, newTrip);
+        return newTrip;
     }
 
     public Customer findCustomerByName(String name) throws NoSuchCustomerException {
@@ -83,9 +84,10 @@ public class TravelOffice {
         return result;
     }
 
-    public void removeTrip(String key) throws NoSuchTripException {
+    public boolean removeTrip(String key) throws NoSuchTripException {
         if (mapOfTrips.containsKey(key)) {
             mapOfTrips.remove(key);
+            return true;
         } else {
             throw new NoSuchTripException();
         }

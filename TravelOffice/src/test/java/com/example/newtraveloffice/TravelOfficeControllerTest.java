@@ -38,6 +38,40 @@ public class TravelOfficeControllerTest {
   //              .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
     }
 
+    @Test
+    public void getCustomer() {
+
+    }
+
+    @Test
+    public void removeCustomer() {
+
+    }
+
+    @Test
+    public void getListOfCustomers() {
+
+    }
+
+    @Test
+    public void addTrip() {
+
+    }
+
+    @Test
+    public void getTrip() {
+
+    }
+
+    @Test
+    public void removeTrip() {
+
+    }
+
+    @Test
+    public void getListOfTrip() {
+
+    }
 
     public static String asJsonString(final Object obj) {
         try {
