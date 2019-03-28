@@ -19,6 +19,12 @@ public class Customer {
         this.surname = surname;
     }
 
+    public Customer(String name, String surname, Address address) {
+        this.name = name;
+        this.surname = surname;
+        this.address = address;
+    }
+
     public String getName() {
         return name;
     }

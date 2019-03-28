@@ -1,21 +1,15 @@
 package com.example.newtraveloffice.models;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Trip {
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate start;
-
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate end;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
+    private Date start;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
+    private Date end;
     private String destination;
     private Long price;
     private boolean domestic;
@@ -23,7 +17,7 @@ public class Trip {
     public Trip() {
     }
 
-    public Trip(LocalDate start, LocalDate end, String destination, Long price, boolean domestic) {
+    public Trip(Date start, Date end, String destination, Long price, boolean domestic) {
         this.start = start;
         this.end = end;
         this.destination = destination;
@@ -31,19 +25,19 @@ public class Trip {
         this.domestic = domestic;
     }
 
-    public LocalDate getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(LocalDate start) {
+    public void setStart(Date start) {
         this.start = start;
     }
 
-    public LocalDate getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDate end) {
+    public void setEnd(Date end) {
         this.end = end;
     }
 

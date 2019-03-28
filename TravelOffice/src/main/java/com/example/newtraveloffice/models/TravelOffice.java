@@ -48,11 +48,11 @@ public class TravelOffice {
         return newTrip;
     }
 
-    public Customer findCustomerByName(String name) throws NoSuchCustomerException {
+    public Customer findCustomerBySurname(String surname) throws NoSuchCustomerException {
         Customer result = null;
         for (Iterator<Customer> iterator = setOfCustomers.iterator(); iterator.hasNext();) {
             Customer customer = iterator.next();
-            if (customer.getSurname().equals(name)) {
+            if (customer.getSurname().equals(surname)) {
                 result = customer;
             }
         }
@@ -97,15 +97,15 @@ public class TravelOffice {
         mapOfTrips.forEach((k, v) -> System.out.println(mapOfTrips.get(k).toString()));
     }
 
-    public boolean assign(String surname, String destination) throws NoSuchCustomerException, NoSuchTripException {
-        Customer customerByName = findCustomerByName(surname);
+    public void assign(String surname, String destination) throws NoSuchCustomerException, NoSuchTripException {
+        Customer customerByName = findCustomerBySurname(surname);
         Trip tripByDestination = findTripByDestination(destination);
 
         try {
             customerByName.assignTrip(tripByDestination);
-            return true;
+
         } catch (Exception ex) {
-            return false;
+
         }
     }
 }

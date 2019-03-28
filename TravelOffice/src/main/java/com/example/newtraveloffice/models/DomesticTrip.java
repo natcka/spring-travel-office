@@ -1,12 +1,12 @@
 package com.example.newtraveloffice.models;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class DomesticTrip extends Trip {
 
     private Long ownArrivalDiscount; //w procentach
 
-    public DomesticTrip(LocalDate start, LocalDate end, String destination, Long price, Long ownArrivalDiscount, boolean domestic) {
+    public DomesticTrip(Date start, Date end, String destination, Long price, Long ownArrivalDiscount, boolean domestic) {
         super(start, end, destination, price, domestic);
         this.ownArrivalDiscount = ownArrivalDiscount;
     }

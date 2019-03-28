@@ -2,14 +2,15 @@ package com.example.newtraveloffice;
 
 import com.example.newtraveloffice.exceptions.NoSuchCustomerException;
 import com.example.newtraveloffice.exceptions.NoSuchTripException;
-import com.example.newtraveloffice.models.Address;
-import com.example.newtraveloffice.models.Customer;
-import com.example.newtraveloffice.models.Trip;
+import com.example.newtraveloffice.models.*;
 import com.example.newtraveloffice.services.TravelOfficeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -17,11 +18,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
 @RestController
+@Configuration
 @EnableSwagger2
 public class TravelOfficeController {
 
@@ -38,17 +41,19 @@ public class TravelOfficeController {
                 .paths(PathSelectors.any())
                 .build();
     }
-//    @Autowired
-//    private UserService userService;
 
     @PostMapping(value = "/customer/add", consumes = "application/json", produces = "application/json")
-    public ResponseEntity addCustomer(@RequestBody Customer customer) {
-        ResponseEntity result = null;
+    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) {
+        ResponseEntity<Customer> result = null;
+//        Address newAddress = new Address(street, zipCode, city);
+//        Customer newCustomer = new Customer(name, surname);
+//        newCustomer.setAddress(newAddress);
         Customer addedCustomer = travelOfficeService.addCustomer(customer);
+
         if (addedCustomer != null) {
-            result = new ResponseEntity(HttpStatus.OK);
+            result = new ResponseEntity<Customer>(addedCustomer, HttpStatus.OK);
         } else {
-            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<Customer>(addedCustomer, HttpStatus.BAD_REQUEST);
         }
         return result;
     }
@@ -56,30 +61,60 @@ public class TravelOfficeController {
     @DeleteMapping("/customer/remove")
     public ResponseEntity removeCustomer(@RequestParam String name, @RequestParam String surname) throws NoSuchCustomerException {
         ResponseEntity result = null;
-        if (travelOfficeService.removeCustomer(name, surname)) {
+        try {
+            travelOfficeService.removeCustomer(name, surname);
             result = ResponseEntity.ok("all fine");
+        } catch (Exception ex) {
+
         }
         return result;
     }
 
-    @GetMapping("/customer/{name}")
-    public Customer getCustomer(@PathVariable String name) throws NoSuchCustomerException {
-        return travelOfficeService.findCustomerByName(name);
+    @GetMapping(value = "/customer/{surname}", produces = "application/json")
+    public ResponseEntity<Customer> getCustomer(@PathVariable String surname) throws NoSuchCustomerException {
+        Customer customer = travelOfficeService.findCustomerBySurname(surname);
+        if (customer != null) {
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        }
+        return null;
     }
 
     @GetMapping("/customer/list")
-    public HashSet<Customer> getListOfCustomers() {
-        return travelOfficeService.getSetOfCustomers();
+    public List<Customer> getListOfCustomers() {
+        return travelOfficeService.getAllCustomers();
     }
 
-    @PostMapping(value = "/trip/add", consumes = "application/json", produces = "application/json")
-    public ResponseEntity addTrip(@Valid @RequestBody Trip trip) {
+    @PutMapping("/assign")
+    public ResponseEntity assignTripToCustomer(@RequestParam String surname, @RequestParam String destination) {
         ResponseEntity result = null;
-        Trip addedTrip = travelOfficeService.addTrip(trip);
-        if (addedTrip != null) {
-            result = new ResponseEntity(HttpStatus.OK);
+        try {
+            travelOfficeService.assign(surname, destination);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (NoSuchTripException e) {
+            e.printStackTrace();
+        } catch (NoSuchCustomerException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+
+
+    @PostMapping(value = "/trip/add", produces = "application/json")
+    public ResponseEntity<Trip> addTrip(@RequestParam String destination, @RequestParam Long price, @RequestParam Date start,
+                                        @RequestParam Date end, @RequestParam boolean domestic, @RequestParam Long insOrDisc) {
+        ResponseEntity<Trip> result = null;
+        Trip newTrip = null;
+        if (domestic) {
+            newTrip = new DomesticTrip(start, end, destination, price, insOrDisc, domestic);
         } else {
-            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
+            newTrip = new AbroadTrip(start, end, destination, price, insOrDisc, domestic);
+        }
+        Trip addedTrip = travelOfficeService.addTrip(newTrip);
+
+        if (addedTrip != null) {
+            result = new ResponseEntity<>(addedTrip, HttpStatus.OK);
+        } else {
+            result = new ResponseEntity<>(addedTrip, HttpStatus.BAD_REQUEST);
         }
         return result;
     }
@@ -101,5 +136,10 @@ public class TravelOfficeController {
     @GetMapping("/trip/list")
     public HashMap<String, Trip> getListOfTrips() {
         return travelOfficeService.getMapOfTrips();
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd-MM-yyyy"), true, 10));
     }
 }
