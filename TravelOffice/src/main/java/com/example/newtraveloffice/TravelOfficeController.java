@@ -20,7 +20,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -45,43 +44,49 @@ public class TravelOfficeController {
     @PostMapping(value = "/customer/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) {
         ResponseEntity<Customer> result = null;
-//        Address newAddress = new Address(street, zipCode, city);
-//        Customer newCustomer = new Customer(name, surname);
-//        newCustomer.setAddress(newAddress);
         Customer addedCustomer = travelOfficeService.addCustomer(customer);
-
         if (addedCustomer != null) {
-            result = new ResponseEntity<Customer>(addedCustomer, HttpStatus.OK);
+            result = new ResponseEntity<>(addedCustomer, HttpStatus.OK);
         } else {
-            result = new ResponseEntity<Customer>(addedCustomer, HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
     @DeleteMapping("/customer/remove")
-    public ResponseEntity removeCustomer(@RequestParam String name, @RequestParam String surname) throws NoSuchCustomerException {
+    public ResponseEntity removeCustomer(@RequestParam String name, @RequestParam String surname) {
         ResponseEntity result = null;
         try {
             travelOfficeService.removeCustomer(name, surname);
-            result = ResponseEntity.ok("all fine");
-        } catch (Exception ex) {
-
+            result = new ResponseEntity(HttpStatus.OK);
+        } catch (NoSuchCustomerException ex) {
+            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
     @GetMapping(value = "/customer/{surname}", produces = "application/json")
-    public ResponseEntity<Customer> getCustomer(@PathVariable String surname) throws NoSuchCustomerException {
-        Customer customer = travelOfficeService.findCustomerBySurname(surname);
-        if (customer != null) {
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+    public ResponseEntity<Customer> getCustomer(@PathVariable String surname) {
+        ResponseEntity<Customer> result = null;
+        try {
+            Customer customer = travelOfficeService.findCustomerBySurname(surname);
+            result = new ResponseEntity<>(customer, HttpStatus.OK);
+        } catch (NoSuchCustomerException ex) {
+            result = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return null;
+        return result;
     }
 
     @GetMapping("/customer/list")
-    public List<Customer> getListOfCustomers() {
-        return travelOfficeService.getAllCustomers();
+    public ResponseEntity<List<Customer>> getListOfCustomers() {
+        ResponseEntity<List<Customer>> result = null;
+        List<Customer> allCustomers = travelOfficeService.getAllCustomers();
+        if (allCustomers != null && !allCustomers.isEmpty()) {
+            result = new ResponseEntity<>(allCustomers, HttpStatus.OK);
+        } else {
+            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
     }
 
     @PutMapping("/assign")
@@ -89,53 +94,63 @@ public class TravelOfficeController {
         ResponseEntity result = null;
         try {
             travelOfficeService.assign(surname, destination);
-            return new ResponseEntity(HttpStatus.OK);
+            result = new ResponseEntity(HttpStatus.OK);
         } catch (NoSuchTripException e) {
-            e.printStackTrace();
+            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
         } catch (NoSuchCustomerException e) {
-            e.printStackTrace();
+            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return result;
     }
 
 
-    @PostMapping(value = "/trip/add", produces = "application/json")
-    public ResponseEntity<Trip> addTrip(@RequestParam String destination, @RequestParam Long price, @RequestParam Date start,
-                                        @RequestParam Date end, @RequestParam boolean domestic, @RequestParam Long insOrDisc) {
+    @PostMapping(value = "/trip/add", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Trip> addTrip(@RequestBody Trip trip) {
         ResponseEntity<Trip> result = null;
-        Trip newTrip = null;
-        if (domestic) {
-            newTrip = new DomesticTrip(start, end, destination, price, insOrDisc, domestic);
-        } else {
-            newTrip = new AbroadTrip(start, end, destination, price, insOrDisc, domestic);
-        }
-        Trip addedTrip = travelOfficeService.addTrip(newTrip);
+        Trip addedTrip = travelOfficeService.addTrip(trip);
 
         if (addedTrip != null) {
             result = new ResponseEntity<>(addedTrip, HttpStatus.OK);
         } else {
-            result = new ResponseEntity<>(addedTrip, HttpStatus.BAD_REQUEST);
+            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
     @DeleteMapping("/trip/remove")
-    public ResponseEntity removeTrip(@RequestParam String destination) throws NoSuchTripException {
+    public ResponseEntity removeTrip(@RequestParam String destination) {
         ResponseEntity result = null;
-        if (travelOfficeService.removeTrip(destination)) {
-            result = ResponseEntity.ok("all fine");
+        try {
+            travelOfficeService.removeTrip(destination);
+            result = new ResponseEntity(HttpStatus.OK);
+        } catch (NoSuchTripException ex) {
+            result = new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
     @GetMapping("/trip/{destination}")
-    public Trip getTrip(@PathVariable String destination) throws NoSuchTripException {
-        return travelOfficeService.findTripByDestination(destination);
+    public ResponseEntity<Trip> getTrip(@PathVariable String destination) {
+        ResponseEntity<Trip> result = null;
+        try {
+            Trip trip = travelOfficeService.findTripByDestination(destination);
+            result = new ResponseEntity<>(trip, HttpStatus.OK);
+        } catch (NoSuchTripException ex) {
+            result = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return result;
     }
 
     @GetMapping("/trip/list")
-    public HashMap<String, Trip> getListOfTrips() {
-        return travelOfficeService.getMapOfTrips();
+    public ResponseEntity<List<Trip>> getListOfTrips() {
+        ResponseEntity<List<Trip>> result = null;
+        List<Trip> allTrips = travelOfficeService.getAllTrips();
+        if (allTrips != null && !allTrips.isEmpty()) {
+            result = new ResponseEntity<>(allTrips, HttpStatus.OK);
+        } else {
+            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return result;
     }
 
     @InitBinder

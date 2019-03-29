@@ -23,29 +23,10 @@ public class TravelOffice {
         }
     }
 
-    public int getCustomerCount() {
-        return setOfCustomers.size();
-    }
-
-    public HashSet<Customer> getSetOfCustomers() {
-        return setOfCustomers;
-    }
-
-    public void setSetOfCustomers(HashSet<Customer> setOfCustomers) {
-        this.setOfCustomers = setOfCustomers;
-    }
-
-    public HashMap<String, Trip> getMapOfTrips() {
-        return mapOfTrips;
-    }
-
-    public void setMapOfTrips(HashMap<String, Trip> mapOfTrips) {
-        this.mapOfTrips = mapOfTrips;
-    }
-
-    public Trip addTrip(String key, Trip newTrip) {
-        mapOfTrips.put(key, newTrip);
-        return newTrip;
+    public void removeCustomer(String name, String surname) throws NoSuchCustomerException {
+        if (!setOfCustomers.removeIf(c -> c.getName().equals(name) && c.getSurname().equals(surname))) {
+            throw new NoSuchCustomerException();
+        }
     }
 
     public Customer findCustomerBySurname(String surname) throws NoSuchCustomerException {
@@ -63,15 +44,32 @@ public class TravelOffice {
         }
     }
 
-    public boolean removeCustomer(String surname, String name) throws NoSuchCustomerException {
-        if (!setOfCustomers.removeIf(c -> c.getName().equals(name) && c.getSurname().equals(surname))) {
-            throw new NoSuchCustomerException();
-        }
-        return true;
-    }
-
     public void getAllCustomers() {
         setOfCustomers.forEach(c -> System.out.println(c.toString()));
+    }
+
+    public void assign(String surname, String destination) throws NoSuchCustomerException, NoSuchTripException {
+        Customer customerByName = findCustomerBySurname(surname);
+        Trip tripByDestination = findTripByDestination(destination);
+
+        try {
+            customerByName.assignTrip(tripByDestination);
+        } catch (Exception ex) {
+
+        }
+    }
+
+    public Trip addTrip(String key, Trip newTrip) {
+        mapOfTrips.put(key, newTrip);
+        return newTrip;
+    }
+
+    public void removeTrip(String key) throws NoSuchTripException {
+        if (mapOfTrips.containsKey(key)) {
+            mapOfTrips.remove(key);
+        } else {
+            throw new NoSuchTripException();
+        }
     }
 
     public Trip findTripByDestination(String destination) throws NoSuchTripException {
@@ -84,28 +82,23 @@ public class TravelOffice {
         return result;
     }
 
-    public boolean removeTrip(String key) throws NoSuchTripException {
-        if (mapOfTrips.containsKey(key)) {
-            mapOfTrips.remove(key);
-            return true;
-        } else {
-            throw new NoSuchTripException();
-        }
-    }
-
     public void getAllTrips() {
         mapOfTrips.forEach((k, v) -> System.out.println(mapOfTrips.get(k).toString()));
     }
 
-    public void assign(String surname, String destination) throws NoSuchCustomerException, NoSuchTripException {
-        Customer customerByName = findCustomerBySurname(surname);
-        Trip tripByDestination = findTripByDestination(destination);
+    public HashSet<Customer> getSetOfCustomers() {
+        return setOfCustomers;
+    }
 
-        try {
-            customerByName.assignTrip(tripByDestination);
+    public void setSetOfCustomers(HashSet<Customer> setOfCustomers) {
+        this.setOfCustomers = setOfCustomers;
+    }
 
-        } catch (Exception ex) {
+    public HashMap<String, Trip> getMapOfTrips() {
+        return mapOfTrips;
+    }
 
-        }
+    public void setMapOfTrips(HashMap<String, Trip> mapOfTrips) {
+        this.mapOfTrips = mapOfTrips;
     }
 }
